@@ -1,0 +1,20 @@
+cat > .gitignore << 'EOF'
+*.exe
+*.dll
+*.so
+*.dylib
+bin/
+*.test
+*.out
+vendor/
+.env
+.env.local
+.vscode/
+.idea/
+*.swp
+.DS_Store
+*.log
+logs/
+tmp/
+main
+EOF
