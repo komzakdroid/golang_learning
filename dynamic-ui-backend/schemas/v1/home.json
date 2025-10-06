@@ -1,0 +1,156 @@
+{
+  "screen_id": "home_v1",
+  "version": "1.0.0",
+  "title": "SAHIY - Bosh sahifa",
+  "background_color": "#F5F5F5",
+  
+  "app_bar": {
+    "type": "search_header",
+    "pinned": true,
+    "title": "productName",
+    "background_color": "#FFFFFF",
+    "is_collapsible": true
+  },
+
+  "widgets": [
+    {
+      "id": "search_categories_section",
+      "type": "search_category_carousel",
+      "margin": {
+        "left": 14,
+        "right": 14,
+        "top": 6,
+        "bottom": 0
+      }
+    },
+    
+    {
+      "id": "ads_banner",
+      "type": "ads_cell",
+      "ads_type": 5,
+      "padding": 14
+    },
+    
+    {
+      "id": "sized_box_1",
+      "type": "sized_box",
+      "height": 12
+    },
+    
+    {
+      "id": "category_section",
+      "type": "category_grid",
+      "margin": {
+        "left": 14,
+        "right": 14,
+        "top": 0,
+        "bottom": 0
+      },
+      "decoration": {
+        "background_color": "transparent",
+        "border_radius": 16
+      }
+    },
+    
+    {
+      "id": "sized_box_2",
+      "type": "sized_box",
+      "height": 16
+    },
+    
+    {
+      "id": "brands_section",
+      "type": "brands_carousel",
+      "margin": {
+        "left": 14,
+        "right": 14,
+        "top": 0,
+        "bottom": 0
+      }
+    },
+    
+    {
+      "id": "sized_box_3",
+      "type": "sized_box",
+      "height": 16
+    },
+    
+    {
+      "id": "featured_products_header",
+      "type": "section_header",
+      "title": "Top tavsiyalar",
+      "margin": {
+        "left": 14,
+        "right": 14,
+        "top": 8,
+        "bottom": 8
+      }
+    },
+    
+    {
+      "id": "featured_products",
+      "type": "advised_goods_grid",
+      "margin": {
+        "left": 14,
+        "right": 14,
+        "top": 0,
+        "bottom": 16
+      },
+      "state_key": "displayGoodsList",
+      "loading_state_key": "advisedLoading",
+      "use_static": true
+    },
+    
+    {
+      "id": "recommended_header",
+      "type": "section_header",
+      "title": "Top tavsiyalar",
+      "margin": {
+        "left": 14,
+        "right": 14,
+        "top": 0,
+        "bottom": 8
+      }
+    },
+    
+    {
+      "id": "recommended_products_grid",
+      "type": "platform_goods_masonry",
+      "margin": {
+        "left": 14,
+        "right": 14,
+        "top": 0,
+        "bottom": 12
+      },
+      "state_key": "loadingUtil",
+      "cross_axis_count": 2,
+      "main_axis_spacing": 12,
+      "cross_axis_spacing": 12,
+      "show_empty_state": true,
+      "show_shimmer": true
+    },
+    
+    {
+      "id": "load_more_footer",
+      "type": "load_more_button",
+      "margin": {
+        "left": 14,
+        "right": 14,
+        "top": 0,
+        "bottom": 60
+      },
+      "action": {
+        "type": "load_more",
+        "method": "loadMoreRecommendedGoods"
+      }
+    }
+  ],
+  
+  "floating_action_button": {
+    "type": "draggable_ai_fab",
+    "action": {
+      "type": "navigate",
+      "route": "/aiPage"
+    }
+  }
+}

@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -32,14 +31,18 @@ func (s *UIService) GetScreenSchema(screenName, version string) (map[string]inte
 	}
 
 	filePath := filepath.Join(s.schemaPath, version, fmt.Sprintf("%s.json", screenName))
-	data, err := ioutil.ReadFile(filePath)
+
+	data, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("schema not found: %w", err)
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("schema '%s' not found for version '%s'", screenName, version)
+		}
+		return nil, fmt.Errorf("failed to read schema: %w", err)
 	}
 
 	var schema map[string]interface{}
 	if err := json.Unmarshal(data, &schema); err != nil {
-		return nil, fmt.Errorf("invalid schema: %w", err)
+		return nil, fmt.Errorf("invalid schema format: %w", err)
 	}
 
 	s.cache.Set(cacheKey, schema, cache.DefaultExpiration)
@@ -48,7 +51,7 @@ func (s *UIService) GetScreenSchema(screenName, version string) (map[string]inte
 
 func (s *UIService) GetAvailableScreens(version string) ([]string, error) {
 	dirPath := filepath.Join(s.schemaPath, version)
-	files, err := ioutil.ReadDir(dirPath)
+	files, err := os.ReadDir(dirPath)
 	if err != nil {
 		return nil, err
 	}

@@ -6,9 +6,8 @@ import (
 	"dynamic-ui-backend/pkg/logger"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 type UIHandler struct {
@@ -21,8 +20,32 @@ func NewUIHandler(uiService *services.UIService, log *logger.Logger) *UIHandler 
 }
 
 func (h *UIHandler) GetScreen(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	screenName := vars["screen"]
+	screenName := r.URL.Query().Get("screen")
+
+	if screenName == "" {
+		h.logger.Error("Screen parameter is missing")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(models.ErrorResponse{
+			Success: false,
+			Error:   "Screen parameter is required",
+			Code:    "MISSING_PARAMETER",
+		})
+		return
+	}
+
+	if strings.Contains(screenName, "..") || strings.Contains(screenName, "/") || strings.Contains(screenName, "\\") {
+		h.logger.Errorw("Invalid screen name", "screen", screenName)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(models.ErrorResponse{
+			Success: false,
+			Error:   "Invalid screen name",
+			Code:    "INVALID_PARAMETER",
+		})
+		return
+	}
+
 	version := r.URL.Query().Get("version")
 	if version == "" {
 		version = "v1"
@@ -30,7 +53,8 @@ func (h *UIHandler) GetScreen(w http.ResponseWriter, r *http.Request) {
 
 	schema, err := h.uiService.GetScreenSchema(screenName, version)
 	if err != nil {
-		h.logger.Errorw("Failed to get schema", "screen", screenName, "error", err)
+		h.logger.Errorw("Failed to get schema", "screen", screenName, "version", version, "error", err)
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(models.ErrorResponse{
 			Success: false,
@@ -88,6 +112,7 @@ func (h *UIHandler) ListScreens(w http.ResponseWriter, r *http.Request) {
 
 	screens, err := h.uiService.GetAvailableScreens(version)
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(models.ErrorResponse{Success: false, Error: "Failed to get screens"})
 		return

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"dynamic-ui-backend/internal/api"
+	"dynamic-ui-backend/internal/database"
 	"dynamic-ui-backend/internal/services"
 	"dynamic-ui-backend/pkg/logger"
 
@@ -30,10 +31,20 @@ func main() {
 
 	appLogger.Info("🚀 Starting Dynamic UI Backend Server...")
 
+	// Database
+	db, err := database.NewDB()
+	if err != nil {
+		appLogger.Fatal(fmt.Sprintf("Database connection failed: %v", err))
+	}
+	defer db.Close()
+	appLogger.Info("✅ Database connected")
+
+	// Services
 	uiService := services.NewUIService()
 	appLogger.Info("✅ UI Service initialized")
 
-	router := api.SetupRoutes(uiService, appLogger)
+	// Routes
+	router := api.SetupRoutes(db, uiService, appLogger)
 
 	port := getEnv("SERVER_PORT", "8080")
 	host := getEnv("SERVER_HOST", "0.0.0.0")
@@ -49,7 +60,8 @@ func main() {
 
 	go func() {
 		appLogger.Info(fmt.Sprintf("🌐 Server listening on http://%s", addr))
-		appLogger.Info(fmt.Sprintf("📱 Test: http://%s/api/v1/ui/survey", addr))
+		appLogger.Info(fmt.Sprintf("📱 API: http://%s/api/v1", addr))
+		appLogger.Info(fmt.Sprintf("💚 Health: http://%s/health", addr))
 
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			appLogger.Fatal(fmt.Sprintf("Server failed: %v", err))
